@@ -29,7 +29,7 @@ Update-Module -Name VMware.PowerCLI.
 
 A good security feature added by Microsoft is stopping PowerShell scripts the ability to run by default. Since we need to run scripts, we have to enable this setting. This can be achieved with the following command:
 
-`Set-ExecutionPolicy Unrestricted`
+Set-ExecutionPolicy Unrestricted
 
 Below is a summary of the different configuration that can be specified:
 
@@ -37,3 +37,24 @@ Below is a summary of the different configuration that can be specified:
 - AllSigned - Only scripts signed by a trusted publisher can be run.
 - RemoteSigned - Downloaded scripts must be signed by a trusted publisher before they can be run.
 - Unrestricted - No restrictions; all Windows PowerShell scripts can be run.
+
+## Secrets Vault
+
+Some of these scripts use Secrets a more secure way of storing sensitive information such as username and passwords.
+
+Install-Module Microsoft.PowerShell.SecretManagement
+Install-Module Microsoft.PowerShell.SecretStore
+
+Register-SecretVault -Name LocalStore -ModuleName Microsoft.PowerShell.SecretStore -DefaultVault
+
+Set-Secret -Vault MyVault -Name Example -Secret “TopSecret”
+
+To Unlock the vault we also need to store the Vault secret (Dont Ask). we do this as an encrypted Password file
+
+Get-Credential | Export-CliXml ~/vaultpassword.xml
+
+We retrive the password in our automation script as 
+
+$vaultpassword = (Import-CliXml ~/vaultpassword.xml).Password
+
+
